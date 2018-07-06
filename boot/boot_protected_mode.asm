@@ -21,3 +21,5 @@ init_pm:
 
 	mov ebp, 0x90000 	; update stack to top of free space
 	mov esp, ebp
+
+	call BEGIN_PM 		; go to useful code
