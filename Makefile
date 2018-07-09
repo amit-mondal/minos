@@ -45,3 +45,4 @@ debug: image.bin kernel.elf
 clean:
 	rm -rf *.bin *.dis *.o image.bin *.elf
 	rm -rf kernel/*.o boot/*.bin drivers/*.o boot/*.o
+	rm -rf boot/*~ drivers/*~ kernel/*~

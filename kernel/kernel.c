@@ -1,23 +1,19 @@
 
-#include "../drivers/ports.h"
-
-void dummy_test_entrypoint() {
-}
+#include "../drivers/screen.h"
+#include "util.h"
 
 void main() {
 
-  port_byte_out(0x3d4, 14); // Requesting byte 14: high byte of cursor pos
+    clear_screen();
 
-  int position = port_byte_in(0x3d5);
-  position <<= 8; // Get high byte
+    int i;
+    for (i = 0; i < 24; i++) {
+	char str[10];
+	int_to_ascii(i, str);
+	kprint_at(str, 0, i);
+    }
 
-  port_byte_out(0x3d4, 15); // Low byte;
-  position += port_byte_in(0x3d5);
-
-  int offset_from_vga = position * 2;
-
-  char* vga = 0xb8000;
-  vga[offset_from_vga] = 'X';
-  vga[offset_from_vga + 1] = 0x0f; // white on black;
+    kprint_at("This text forces the kernel to scroll. Row 0 will disappear. ", 60, 24);
+    kprint("And with this text, the kernel will scroll again, and row 1 will disappear too!");
   
 }

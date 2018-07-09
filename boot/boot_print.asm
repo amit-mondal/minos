@@ -4,7 +4,7 @@ print:
 
 start:
 	mov al, [bx]
-	or al, 0
+	cmp al, 0
 	jz done
 
 	mov ah, 0x0e
@@ -24,5 +24,6 @@ print_nl:
 	int 0x10		; print interrupt	
 	mov al, 0x0d		; cr char
 	int 0x10		; print interrupt
-	popa			; restore regs
+	popa
+				; restore regs
 	ret
