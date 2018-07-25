@@ -1,14 +1,14 @@
-C_SOURCES = $(wildcard kernel/*.c drivers/*.c)
-HEADERS = $(wildcard kernel/*.h drivers/*.h)
+C_SOURCES = $(wildcard kernel/*.c drivers/*.c cpu/*.c)
+HEADERS = $(wildcard kernel/*.h drivers/*.h cpu/*.h)
 # Nice syntax for file extension replacement
-OBJ = ${C_SOURCES:.c=.o}
+OBJ = ${C_SOURCES:.c=.o cpu/interrupt.o}
 
 # Change this if your cross-compiler is somewhere else
 CC = /usr/local/i386elfgcc/bin/i386-elf-gcc
 LD = /usr/local/i386elfgcc/bin/i386-elf-ld
 GDB = /usr/local/i386elfgcc/bin/i386-elf-gdb
 # -g: Use debugging symbols in gcc
-CFLAGS = -g
+CFLAGS = -g -std=c99
 
 # First rule is run by default
 image.bin: boot/bootloader.bin kernel.bin
@@ -21,7 +21,7 @@ kernel.bin: boot/kernel_entrypoint.o ${OBJ}
 
 # Used for debugging purposes
 kernel.elf: boot/kernel_entrypoint.o ${OBJ}
-	$(LD) -o $@ -Ttext 0x1000 $^ 
+	$(LD) -o $@ -Ttext 0x1000 $^
 
 run: image.bin
 	qemu-system-i386 -fda image.bin
@@ -44,5 +44,6 @@ debug: image.bin kernel.elf
 
 clean:
 	rm -rf *.bin *.dis *.o image.bin *.elf
-	rm -rf kernel/*.o boot/*.bin drivers/*.o boot/*.o
-	rm -rf boot/*~ drivers/*~ kernel/*~
+	for dir in kernel boot cpu; do \
+		rm -rf $$dir/*.o $$dir/*~ ;\
+	done
