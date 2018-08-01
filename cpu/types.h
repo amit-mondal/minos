@@ -11,5 +11,10 @@ typedef char s8;
 #define LOW_16(addr) (u16) (addr & 0xFFFF)
 #define HIGH_16(addr) (u16) ((addr >> 16) & 0xFFFF)
 
+#define LOW_8(addr) (u8) (addr & 0xFF)
+#define HIGH_8(addr) (u8) ((addr >> 8) & 0xFF)
+
+#define NULL 0x0
+
 #endif
 

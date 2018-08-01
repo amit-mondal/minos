@@ -1,5 +1,5 @@
-C_SOURCES = $(wildcard kernel/*.c drivers/*.c cpu/*.c)
-HEADERS = $(wildcard kernel/*.h drivers/*.h cpu/*.h)
+C_SOURCES = $(wildcard kernel/*.c drivers/*.c cpu/*.c libc/*.c)
+HEADERS = $(wildcard kernel/*.h drivers/*.h cpu/*.h libc/*.h)
 # Nice syntax for file extension replacement
 OBJ = ${C_SOURCES:.c=.o cpu/interrupt.o}
 
@@ -28,7 +28,7 @@ run: image.bin
 
 # Open the connection to qemu and load our kernel-object file with symbols
 debug: image.bin kernel.elf
-	qemu-system-i386 -s -fda image.bin &
+	qemu-system-i386 -s -fda image.bin -d guest_errors,int &
 	${GDB} -ex "target remote localhost:1234" -ex "symbol-file kernel.elf"
 
 # Generic rules for wildcards
@@ -44,6 +44,6 @@ debug: image.bin kernel.elf
 
 clean:
 	rm -rf *.bin *.dis *.o image.bin *.elf
-	for dir in kernel boot cpu; do \
+	for dir in kernel boot cpu libc; do \
 		rm -rf $$dir/*.o $$dir/*~ ;\
 	done
