@@ -1,7 +1,7 @@
 #ifndef CPU_ISR_H
 #define CPU_ISR_H
 
-#include "types.h"
+#include <stdint.h>
 
 extern void isr0();
 extern void isr1();
@@ -73,18 +73,19 @@ extern void irq15();
 #define IRQ15 47
 
 typedef struct {
-  u32 ds; // Data segment
-  u32 edi, esi, ebp, esp, ebx, edx, ecx, eax; // pusha registers
-  u32 int_no, err_code; // Interrupt info
-  u32 eip, cs, eflags, useresp, ss; // Pushed by CPU
+  uint32_t ds; // Data segment
+  uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax; // pusha registers
+  uint32_t int_no, err_code; // Interrupt info
+  uint32_t eip, cs, eflags, useresp, ss; // Pushed by CPU
 } registers_t;
 
 void isr_install();
 void isr_handler(registers_t r);
+void irq_install();
 
 typedef void (*isr_t)(registers_t r);
 
-void register_interrupt_handler(u8 n, isr_t handler);
+void register_interrupt_handler(uint8_t n, isr_t handler);
 
 #define PIC1		0x20		/* IO base address for master PIC */
 #define PIC2		0xA0		/* IO base address for slave PIC */

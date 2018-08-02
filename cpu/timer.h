@@ -2,7 +2,7 @@
 #ifndef CPU_TIMER_H
 #define CPU_TIMER_H
 
-#include "../kernel/util.h"
+#include <stdint.h>
 
 #define HW_CLK_FRQ_HZ 1193180
 #define CMD_PORT 0x43
@@ -12,6 +12,6 @@
 #define DATA_PORT_CHAN1 0x41 // No longer used
 #define DATA_PORT_CHAN2 0x42 // controls the PC speaker
 
-void init_timer(u32 freq);
+void init_timer(uint32_t freq);
 
 #endif

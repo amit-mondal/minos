@@ -1,17 +1,18 @@
 #include "keyboard.h"
-#include "ports.h"
+#include "../cpu/ports.h"
 #include "../cpu/isr.h"
-#include "../kernel/util.h"
+#include "../libc/string.h"
+#include "../libc/stddef.h"
 #include "screen.h"
 
-void print_letter(u8);
+void print_letter(uint8_t);
 
-static void keyboard_cb(registers_t UNUSED(regs)) {
+static void keyboard_cb(registers_t regs UNUSED) {
 
-    u8 scancode = port_byte_in(PIC_SCANCODE_PORT);
+    uint8_t scancode = port_byte_in(PIC_SCANCODE_PORT);
     char* sc_ascii = NULL;
 
-    int_to_ascii(scancode, sc_ascii);
+    itoa(scancode, sc_ascii);
     kprint("Keyboard scancode: ");
     kprint(sc_ascii);
     kprint(", ");
@@ -24,7 +25,7 @@ void init_keyboard() {
     register_interrupt_handler(IRQ1, keyboard_cb);
 }
 
-void print_letter(u8 scancode) {
+void print_letter(uint8_t scancode) {
     switch (scancode) {
     case 0x0:
 	kprint("ERROR");
