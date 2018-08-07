@@ -2,12 +2,21 @@
 #include "../cpu/isr.h"
 #include "../cpu/timer.h"
 #include "../drivers/keyboard.h"
+#include "../drivers/screen.h"
+#include "../libc/stddef.h"
 
-void main() {
+char buf[256];
+
+void kmain() {
   isr_install();
+  irq_install();  
 
   __asm__ __volatile__("sti");
   init_timer(50);
   init_keyboard();
-  
+
+  size_t len = read_raw_kb(buf, 255);
+  buf[len] = 0;
+  kprint("Received a string: ");
+  kprint(buf);
 }

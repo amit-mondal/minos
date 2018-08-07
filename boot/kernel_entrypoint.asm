@@ -1,6 +1,6 @@
 
 	[bits 32]
-	[extern main] 		; calling point -> must be C main
+	[extern kmain] 		; calling point to enter kernel
 
-	call main
+	call kmain
 	jmp $

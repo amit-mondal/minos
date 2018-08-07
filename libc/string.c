@@ -32,6 +32,11 @@ unsigned long strlen(const char s[]) {
     return i;
 }
 
+void trimlast(char s[]) {
+    unsigned long len = strlen(s);
+    s[len - 1] = '\0';	
+}
+
 void append(char s[], char n) {
     int len = strlen(s);
     s[len] = n;

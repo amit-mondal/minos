@@ -35,7 +35,9 @@ irq_common_stub: 		; Mostly identical to isr stub, except we pop ebx
 	mov es, ax
 	mov fs, ax
 	mov gs, ax
+	
 	call irq_handler
+	
 	pop ebx
 	mov ds, bx
 	mov es, bx

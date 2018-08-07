@@ -40,10 +40,19 @@ void kprint(char *message) {
     kprint_at(message, -1, -1);
 }
 
+void kprint_backspace() {
+    int cursor_offset = get_cursor_offset();
+    int row = get_offset_row(cursor_offset - 2);
+    int col = get_offset_col(cursor_offset - 2);
+    // We're going to use the delete char like UNIXes, although
+    // we could use backspace like Windows.
+    print_char(DELETE_SCR, col, row, WHITE_ON_BLACK);
+}
 
 
 int print_char(char c, int col, int row, char attr) {
-    unsigned char *vidmem = (unsigned char*) VIDEO_ADDRESS;
+    uint8_t *vidmem = (unsigned char*) VIDEO_ADDRESS;
+    
     if (!attr) {
 	attr = WHITE_ON_BLACK;
     }
@@ -63,14 +72,22 @@ int print_char(char c, int col, int row, char attr) {
 	offset = get_cursor_offset();
     }
 
-    if (c == '\n') {
-        row = get_offset_row(offset);
-        offset = get_offset(0, row+1);
-    } else {
+    switch(c) {
+    case NEWLINE:
+	row = get_offset_row(offset);
+	offset = get_offset(0, row+1);
+	break;
+    case BACKSPACE_SCR:
+    case DELETE_SCR:
+	vidmem[offset] = EMPTY;
+	vidmem[offset + 1] = attr;
+	offset += 2;
+	break;
+    default:
         vidmem[offset] = c;
         vidmem[offset+1] = attr;
-        offset += 2;
-    }
+        offset += 2;	
+    }     
 
     // Scrolling support by checking cursor is past end of screen
     if (offset >= SCREEN_END) {

@@ -45,6 +45,6 @@ debug: image.bin kernel.elf
 
 clean:
 	rm -rf *.bin *.dis *.o image.bin *.elf
-	for dir in kernel boot cpu libc; do \
+	for dir in kernel boot cpu drivers libc; do \
 		rm -rf $$dir/*.o $$dir/*~ ;\
 	done

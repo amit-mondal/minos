@@ -2,215 +2,97 @@
 #include "../cpu/ports.h"
 #include "../cpu/isr.h"
 #include "../libc/string.h"
+#include "../libc/mem.h"
 #include "../libc/stddef.h"
 #include "screen.h"
 
-void print_letter(uint8_t);
+
+// Keyboard input sent to this buffer.
+static char kb_input_buf[KB_INPUT_BUFFER_SIZE];
+static size_t kb_buf_len = 0;
+
+// If this is ever non-null, someone is waiting on a read.
+static void* dest_buffer = NULL;
+static int recvd_return = 0;
+static size_t read_len = 0;
+
+// String mapping for scan code.
+const char *sc_str[] = { "ERROR", "Esc", "1", "2", "3", "4", "5", "6", 
+    "7", "8", "9", "0", "-", "=", "Backspace", "Tab", "Q", "W", "E", 
+        "R", "T", "Y", "U", "I", "O", "P", "[", "]", "Enter", "Lctrl", 
+        "A", "S", "D", "F", "G", "H", "J", "K", "L", ";", "'", "`", 
+        "LShift", "\\", "Z", "X", "C", "V", "B", "N", "M", ",", ".", 
+        "/", "RShift", "Keypad *", "LAlt", "Spacebar"};
+
+// Char mapping for scan code.
+const char sc_char[] = { '?', '?', '1', '2', '3', '4', '5', '6',     
+    '7', '8', '9', '0', '-', '=', '?', '?', 'Q', 'W', 'E', 'R', 'T', 'Y', 
+        'U', 'I', 'O', 'P', '[', ']', '?', '?', 'A', 'S', 'D', 'F', 'G', 
+        'H', 'J', 'K', 'L', ';', '\'', '`', '?', '\\', 'Z', 'X', 'C', 'V', 
+        'B', 'N', 'M', ',', '.', '/', '?', '?', '?', ' '};
 
 static void keyboard_cb(registers_t regs UNUSED) {
 
-    uint8_t scancode = port_byte_in(PIC_SCANCODE_PORT);
-    char* sc_ascii = NULL;
+    // If no one's waiting on the input, just return;
+    if (!dest_buffer) {
+	return;
+    }
 
-    itoa(scancode, sc_ascii);
-    kprint("Keyboard scancode: ");
-    kprint(sc_ascii);
-    kprint(", ");
-    print_letter(scancode);
-    kprint("\n");
+    uint8_t scancode = port_byte_in(PIC_SCANCODE_PORT);
+
+    switch(scancode) {
+    case BACKSPACE_KB:
+	trimlast(kb_input_buf);
+	if (kb_buf_len) {
+	    kb_buf_len--;
+	}
+	kprint_backspace();
+	break;
+    case ENTER_KB:
+	kprint("\n");
+	if (dest_buffer) {
+	    recvd_return = 1;
+	    memcpy(dest_buffer, kb_input_buf, kb_buf_len);
+	    read_len = kb_buf_len;
+	}
+	kb_input_buf[0] = '\0';
+	kb_buf_len = 0;
+	break;
+    default: {
+	if (kb_buf_len < KB_INPUT_BUFFER_SIZE) {	    
+	    char char_val = sc_char[(int) scancode];
+	    char str[2] = {char_val, '\0'};
+	    append(kb_input_buf, char_val);
+	    kb_buf_len++;
+	    kprint(str);
+	}
+    }	
+    }
+    
+}
+
+size_t read_raw_kb(void* buf, size_t len) {    
+    dest_buffer = buf;
+    size_t ret_read_len;
+    size_t current_kb_buf_len = kb_buf_len;
+    while ((kb_buf_len - current_kb_buf_len) < len &&
+	   !recvd_return) {
+	// Just spin.
+    }
+    if (recvd_return) {
+	ret_read_len = read_len;
+    } else {
+	memcpy(buf, kb_input_buf, len);
+	ret_read_len = len;
+    }
+    // Reset read vars.
+    read_len = 0;
+    recvd_return = 1;
+    dest_buffer = NULL;
+    return ret_read_len;
 }
 
 
 void init_keyboard() {
     register_interrupt_handler(IRQ1, keyboard_cb);
-}
-
-void print_letter(uint8_t scancode) {
-    switch (scancode) {
-    case 0x0:
-	kprint("ERROR");
-	break;
-    case 0x1:
-	kprint("ESC");
-	break;
-    case 0x2:
-	kprint("1");
-	break;
-    case 0x3:
-	kprint("2");
-	break;
-    case 0x4:
-	kprint("3");
-	break;
-    case 0x5:
-	kprint("4");
-	break;
-    case 0x6:
-	kprint("5");
-	break;
-    case 0x7:
-	kprint("6");
-	break;
-    case 0x8:
-	kprint("7");
-	break;
-    case 0x9:
-	kprint("8");
-	break;
-    case 0x0A:
-	kprint("9");
-	break;
-    case 0x0B:
-	kprint("0");
-	break;
-    case 0x0C:
-	kprint("-");
-	break;
-    case 0x0D:
-	kprint("+");
-	break;
-    case 0x0E:
-	kprint("Backspace");
-	break;
-    case 0x0F:
-	kprint("Tab");
-	break;
-    case 0x10:
-	kprint("Q");
-	break;
-    case 0x11:
-	kprint("W");
-	break;
-    case 0x12:
-	kprint("E");
-	break;
-    case 0x13:
-	kprint("R");
-	break;
-    case 0x14:
-	kprint("T");
-	break;
-    case 0x15:
-	kprint("Y");
-	break;
-    case 0x16:
-	kprint("U");
-	break;
-    case 0x17:
-	kprint("I");
-	break;
-    case 0x18:
-	kprint("O");
-	break;
-    case 0x19:
-	kprint("P");
-	break;
-    case 0x1A:
-	kprint("[");
-	break;
-    case 0x1B:
-	kprint("]");
-	break;
-    case 0x1C:
-	kprint("ENTER");
-	break;
-    case 0x1D:
-	kprint("LCtrl");
-	break;
-    case 0x1E:
-	kprint("A");
-	break;
-    case 0x1F:
-	kprint("S");
-	break;
-    case 0x20:
-	kprint("D");
-	break;
-    case 0x21:
-	kprint("F");
-	break;
-    case 0x22:
-	kprint("G");
-	break;
-    case 0x23:
-	kprint("H");
-	break;
-    case 0x24:
-	kprint("J");
-	break;
-    case 0x25:
-	kprint("K");
-	break;
-    case 0x26:
-	kprint("L");
-	break;
-    case 0x27:
-	kprint(";");
-	break;
-    case 0x28:
-	kprint("'");
-	break;
-    case 0x29:
-	kprint("`");
-	break;
-    case 0x2A:
-	kprint("LShift");
-	break;
-    case 0x2B:
-	kprint("\\");
-	break;
-    case 0x2C:
-	kprint("Z");
-	break;
-    case 0x2D:
-	kprint("X");
-	break;
-    case 0x2E:
-	kprint("C");
-	break;
-    case 0x2F:
-	kprint("V");
-	break;
-    case 0x30:
-	kprint("B");
-	break;
-    case 0x31:
-	kprint("N");
-	break;
-    case 0x32:
-	kprint("M");
-	break;
-    case 0x33:
-	kprint(",");
-	break;
-    case 0x34:
-	kprint(".");
-	break;
-    case 0x35:
-	kprint("/");
-	break;
-    case 0x36:
-	kprint("Rshift");
-	break;
-    case 0x37:
-	kprint("Keypad *");
-	break;
-    case 0x38:
-	kprint("LAlt");
-	break;
-    case 0x39:
-	kprint("Spc");
-	break;
-    default:
-	/* 'key up' event corresponds to the 'keydown' + 0x80 
-	 * it may still be a scancode we haven't implemented yet, or
-	 * maybe a control/escape sequence */
-	if (scancode <= 0x7f) {
-	    kprint("Unknown key down");
-	} else if (scancode <= 0x39 + 0x80) {
-	    kprint("key up ");
-	    print_letter(scancode - 0x80);
-	} else kprint("Unknown key up");
-	break;
-    }
 }

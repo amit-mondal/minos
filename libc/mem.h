@@ -1,6 +1,6 @@
 
-#ifndef MEM_H
-#define MEM_H
+#ifndef LIB_MEM_H
+#define LIB_MEM_H
 
 #include <stdint.h>
 
