@@ -40,7 +40,7 @@ debug: image.bin kernel.elf
 	nasm $< -f bin -o $@
 
 clean:
-	rm -rf *.bin *.dis *.o image.bin *.elf
+	rm -rf *.bin *.dis *.o image.bin *.elf *~
 	for dir in kernel boot cpu drivers libc; do \
-		rm -rf $$dir/*.o $$dir/*~ ;\
+		rm -rf $$dir/*.o $$dir/*~ $$dir/*.bin ;\
 	done

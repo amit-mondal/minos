@@ -93,7 +93,7 @@ size_t read_raw_kb(void* buf, size_t len) {
     }
     // Reset read vars.
     read_len = 0;
-    recvd_return = 1;
+    recvd_return = 0;
     dest_buffer = NULL;
     return ret_read_len;
 }

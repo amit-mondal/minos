@@ -81,7 +81,6 @@ int print_char(char c, int col, int row, char attr) {
     case DELETE_SCR:
 	vidmem[offset] = EMPTY;
 	vidmem[offset + 1] = attr;
-	offset += 2;
 	break;
     default:
         vidmem[offset] = c;
