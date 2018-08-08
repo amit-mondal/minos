@@ -11,6 +11,7 @@
 	call print_nl
 
 	call load_kernel	; read kernel from disk
+	
 	call switch_to_pm
 	jmp $ 			; unreachable
 

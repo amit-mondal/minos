@@ -75,7 +75,7 @@ int print_char(char c, int col, int row, char attr) {
     switch(c) {
     case NEWLINE:
 	row = get_offset_row(offset);
-	offset = get_offset(0, row+1);
+	offset = get_offset(0, row + 1);
 	break;
     case BACKSPACE_SCR:
     case DELETE_SCR:
@@ -93,7 +93,7 @@ int print_char(char c, int col, int row, char attr) {
     if (offset >= SCREEN_END) {
 	int i;
 	for (i = 1;i < MAX_ROWS;i++) {
-	    // Copy data up.
+	    // Copy all of video memory up.
 	    memcpy((char*) get_offset(0, i) + VIDEO_ADDRESS,
 			 (char*) get_offset(0, i - 1) + VIDEO_ADDRESS,
 			 MAX_COLS * 2);

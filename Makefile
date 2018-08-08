@@ -1,17 +1,15 @@
 C_SOURCES = $(wildcard kernel/*.c drivers/*.c cpu/*.c libc/*.c)
 HEADERS = $(wildcard kernel/*.h drivers/*.h cpu/*.h libc/*.h)
-# Nice syntax for file extension replacement
 OBJ = ${C_SOURCES:.c=.o cpu/interrupt.o}
 
-# Change this if your cross-compiler is somewhere else
 CC = /usr/local/i386elfgcc/bin/i386-elf-gcc
 LD = /usr/local/i386elfgcc/bin/i386-elf-ld
 GDB = /usr/local/i386elfgcc/bin/i386-elf-gdb
-# -g: Use debugging symbols in gcc
+
 CFLAGS = -g -m32 -ffreestanding -fno-exceptions \
 		 -Wall -Wextra -Werror
 
-# First rule is run by default
+# First rule run by default
 image.bin: boot/bootloader.bin kernel.bin
 	cat $^ > image.bin
 
@@ -32,8 +30,6 @@ debug: image.bin kernel.elf
 	qemu-system-i386 -s -fda image.bin -d guest_errors,int &
 	${GDB} -ex "target remote localhost:1234" -ex "symbol-file kernel.elf"
 
-# Generic rules for wildcards
-# To make an object, always compile from its .c
 %.o: %.c ${HEADERS}
 	${CC} ${CFLAGS} -ffreestanding -c $< -o $@
 

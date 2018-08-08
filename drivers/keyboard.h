@@ -1,8 +1,8 @@
 
 #define PIC_SCANCODE_PORT 0x60
 
-#define BACKSPACE_KB 0x0E
-#define ENTER_KB 0x1C
+#define KB_BACKSPACE 0x0E
+#define KB_ENTER 0x1C
 
 #define KB_INPUT_BUFFER_SIZE 1024
 

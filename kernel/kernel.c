@@ -8,15 +8,13 @@
 char buf[256];
 
 void kmain() {
-  isr_install();
-  irq_install();  
+    isr_install();
+    irq_install();  
 
-  __asm__ __volatile__("sti");
-  init_timer(50);
-  init_keyboard();
+    __asm__ __volatile__("sti");
 
-  size_t len = read_raw_kb(buf, 255);
-  buf[len] = 0;
-  kprint("Received a string: ");
-  kprint(buf);
+    size_t len = read_raw_kb(buf, 255);
+    buf[len] = 0;
+    kprint("Received a string: ");
+    kprint(buf);
 }

@@ -18,18 +18,18 @@ static size_t read_len = 0;
 
 // String mapping for scan code.
 const char *sc_str[] = { "ERROR", "Esc", "1", "2", "3", "4", "5", "6", 
-    "7", "8", "9", "0", "-", "=", "Backspace", "Tab", "Q", "W", "E", 
-        "R", "T", "Y", "U", "I", "O", "P", "[", "]", "Enter", "Lctrl", 
-        "A", "S", "D", "F", "G", "H", "J", "K", "L", ";", "'", "`", 
-        "LShift", "\\", "Z", "X", "C", "V", "B", "N", "M", ",", ".", 
-        "/", "RShift", "Keypad *", "LAlt", "Spacebar"};
+			 "7", "8", "9", "0", "-", "=", "Backspace", "Tab", "Q", "W", "E", 
+			 "R", "T", "Y", "U", "I", "O", "P", "[", "]", "Enter", "Lctrl", 
+			 "A", "S", "D", "F", "G", "H", "J", "K", "L", ";", "'", "`", 
+			 "LShift", "\\", "Z", "X", "C", "V", "B", "N", "M", ",", ".", 
+			 "/", "RShift", "Keypad *", "LAlt", "Spacebar"};
 
 // Char mapping for scan code.
 const char sc_char[] = { '?', '?', '1', '2', '3', '4', '5', '6',     
-    '7', '8', '9', '0', '-', '=', '?', '?', 'Q', 'W', 'E', 'R', 'T', 'Y', 
-        'U', 'I', 'O', 'P', '[', ']', '?', '?', 'A', 'S', 'D', 'F', 'G', 
-        'H', 'J', 'K', 'L', ';', '\'', '`', '?', '\\', 'Z', 'X', 'C', 'V', 
-        'B', 'N', 'M', ',', '.', '/', '?', '?', '?', ' '};
+			 '7', '8', '9', '0', '-', '=', '?', '?', 'Q', 'W', 'E', 'R', 'T', 'Y', 
+			 'U', 'I', 'O', 'P', '[', ']', '?', '?', 'A', 'S', 'D', 'F', 'G', 
+			 'H', 'J', 'K', 'L', ';', '\'', '`', '?', '\\', 'Z', 'X', 'C', 'V', 
+			 'B', 'N', 'M', ',', '.', '/', '?', '?', '?', ' '};
 
 static void keyboard_cb(registers_t regs UNUSED) {
 
@@ -40,15 +40,20 @@ static void keyboard_cb(registers_t regs UNUSED) {
 
     uint8_t scancode = port_byte_in(PIC_SCANCODE_PORT);
 
+    // Ignore unknown scancodes.
+    if (scancode > SCANCODE_MAX) {
+	return;
+    }
+
     switch(scancode) {
-    case BACKSPACE_KB:
+    case KB_BACKSPACE:
 	trimlast(kb_input_buf);
 	if (kb_buf_len) {
 	    kb_buf_len--;
 	}
 	kprint_backspace();
 	break;
-    case ENTER_KB:
+    case KB_ENTER:
 	kprint("\n");
 	if (dest_buffer) {
 	    recvd_return = 1;
@@ -77,9 +82,10 @@ size_t read_raw_kb(void* buf, size_t len) {
     size_t current_kb_buf_len = kb_buf_len;
     while ((kb_buf_len - current_kb_buf_len) < len &&
 	   !recvd_return) {
-	// Just spin.
+	// Spin until we have len bytes to return, or until we get
+	// a return char.      
     }
-    if (recvd_return) {
+    if (recvd_return) {      
 	ret_read_len = read_len;
     } else {
 	memcpy(buf, kb_input_buf, len);
