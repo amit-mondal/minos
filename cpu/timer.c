@@ -8,7 +8,7 @@
 
 uint32_t tick = 0;
 
-static void timer_cb(registers_t regs UNUSED) {
+static void timer_cb(registers_t* regs UNUSED) {
     tick++;    
 }
 

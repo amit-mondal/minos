@@ -72,18 +72,22 @@ extern void irq15();
 #define IRQ14 46
 #define IRQ15 47
 
+/**
+Corresponds to registers pushed onto stack in interrupt.asm
+*/
+
 typedef struct {
   uint32_t ds; // Data segment
-  uint32_t edi, esi, ebp, esp, ebx, edx, ecx, eax; // pusha registers
+  uint32_t edi, esi, ebp, esp_filler, ebx, edx, ecx, eax; // pusha registers
   uint32_t int_no, err_code; // Interrupt info
   uint32_t eip, cs, eflags, useresp, ss; // Pushed by CPU
 } registers_t;
 
 void isr_install();
-void isr_handler(registers_t r);
+void isr_handler(registers_t* r);
 void irq_install();
 
-typedef void (*isr_t)(registers_t r);
+typedef void (*isr_t)(registers_t* r);
 
 void register_interrupt_handler(uint8_t n, isr_t handler);
 

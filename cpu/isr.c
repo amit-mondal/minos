@@ -115,13 +115,13 @@ char *exception_messages[] = {
 			      "Reserved"
 };
 
-void isr_handler(registers_t r) {
+void isr_handler(registers_t* r) {
   kprint("Received interrupt: ");
   char interrupt_no[3];
-  itoa(r.int_no, interrupt_no);
+  itoa(r->int_no, interrupt_no);
   kprint(interrupt_no);
   kprint("\n");
-  kprint(exception_messages[r.int_no]);
+  kprint(exception_messages[r->int_no]);
   kprint("\n");
 }
 
@@ -129,18 +129,18 @@ void register_interrupt_handler(uint8_t n, isr_t handler) {
     interrupt_handlers[n] = handler;
 }
 
-void irq_handler(registers_t r) {
+void irq_handler(registers_t* r) {
     // Must send EOI (0x20) to PIC
 
     // If the IRQ > 7 (Int. no > 40), reset slave
-    if (r.int_no >= 40) {
+    if (r->int_no >= 40) {
 	port_byte_out(PIC2_COMMAND, PIC_EOI);
     }
     // Send reset to the master always
     port_byte_out(PIC1_COMMAND, PIC_EOI);
 
-    if (interrupt_handlers[r.int_no] != 0) {
-	isr_t handler = interrupt_handlers[r.int_no];
+    if (interrupt_handlers[r->int_no] != 0) {
+	isr_t handler = interrupt_handlers[r->int_no];
 	handler(r);
     }
 }

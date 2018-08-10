@@ -31,7 +31,7 @@ const char sc_char[] = { '?', '?', '1', '2', '3', '4', '5', '6',
 			 'H', 'J', 'K', 'L', ';', '\'', '`', '?', '\\', 'Z', 'X', 'C', 'V', 
 			 'B', 'N', 'M', ',', '.', '/', '?', '?', '?', ' '};
 
-static void keyboard_cb(registers_t regs UNUSED) {
+static void keyboard_cb(registers_t* regs UNUSED) {
 
     // If no one's waiting on the input, just return;
     if (!dest_buffer) {

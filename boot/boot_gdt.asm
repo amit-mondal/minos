@@ -12,12 +12,12 @@ gdt_code:		 ; for code segment
 	db 0x0       ; segment base, bits 24-31
 
 gdt_data: 			; for data segment
-    dw 0xffff
-    dw 0x0
-    db 0x0
-    db 10010010b
-    db 11001111b
-    db 0x0
+	dw 0xffff
+	dw 0x0
+	db 0x0
+	db 10010010b
+	db 11001111b
+	db 0x0
 
 gdt_end:
 

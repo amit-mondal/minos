@@ -12,10 +12,13 @@ isr_common_stub:		; Called by all interrupts
 	mov es, ax
 	mov fs, ax
 	mov gs, ax
-
+	push esp
+	
+	cld			; For SysV ABI compliance when calling C code
 	call isr_handler
 
 	pop eax
+	pop eax			; Because we pushed esp
 	mov ds, ax
 	mov es, ax
 	mov fs, ax
@@ -35,9 +38,12 @@ irq_common_stub: 		; Mostly identical to isr stub, except we pop ebx
 	mov es, ax
 	mov fs, ax
 	mov gs, ax
-	
+	push esp
+
+	cld
 	call irq_handler
-	
+
+	pop ebx
 	pop ebx
 	mov ds, bx
 	mov es, bx

@@ -1,6 +1,6 @@
 	[org 0x7c00] ; bootloader offset
 
-	KERNEL_OFFSET equ 0x1000 ; used when linking kernel
+KERNEL_OFFSET equ 0x1000 ; used when linking kernel
 
 	mov [BOOT_DRIVE], dl 	; BIOS sets up the boot drive in dl
 	mov bp, 0x9000
@@ -15,12 +15,12 @@
 	call switch_to_pm
 	jmp $ 			; unreachable
 
-	%include "boot/boot_print.asm"
-	%include "boot/boot_printhex.asm"
-	%include "boot/boot_disk.asm"
-	%include "boot/boot_gdt.asm"
-	%include "boot/boot_prot_print.asm"
-	%include "boot/boot_protected_mode.asm"
+%include "boot/boot_print.asm"
+%include "boot/boot_printhex.asm"
+%include "boot/boot_disk.asm"
+%include "boot/boot_gdt.asm"
+%include "boot/boot_prot_print.asm"
+%include "boot/boot_protected_mode.asm"
 
 
 	[bits 16]
