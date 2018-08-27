@@ -1,4 +1,4 @@
-#include "mem.h"
+#include "alloc.h"
 
 
 static void* heap_addr = INITIAL_HEAP_ADDR;
