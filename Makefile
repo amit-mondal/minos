@@ -1,4 +1,4 @@
-C_SOURCES = $(wildcard kernel/*.c drivers/*.c cpu/*.c libc/*.c)
+C_SOURCES = $(wildcard kernel/*.c drivers/*.c cpu/*.c libc/*.c mem/*.c)
 HEADERS = $(wildcard kernel/*.h drivers/*.h cpu/*.h libc/*.h)
 OBJ = ${C_SOURCES:.c=.o cpu/interrupt.o}
 
@@ -41,6 +41,6 @@ debug: image.bin kernel.elf
 
 clean:
 	rm -rf *.bin *.dis *.o image.bin *.elf *~
-	for dir in kernel boot cpu drivers libc; do \
+	for dir in kernel boot cpu drivers libc mem; do \
 		rm -rf $$dir/*.o $$dir/*~ $$dir/*.bin ;\
 	done
